@@ -340,8 +340,12 @@ async function publicar(){
     localStorage.removeItem('socio_borrador');
     sync('ok','✓ GUARDADO — COCO YA LO VE');
   }catch(e){
-    sync('error','SIN CONEXIÓN — REINTENTO EN 30 S');
-    programarPublicacion(30000);
+    if(/401|403/.test(e.message||'')){
+      sync('error','CÓDIGO INVÁLIDO — VUELVE A ABRIR TU LINK MÁGICO');
+    }else{
+      sync('error','SIN CONEXIÓN — REINTENTO EN 30 S');
+      programarPublicacion(30000);
+    }
   }finally{
     publicando=false;
     if(pubPendiente){ pubPendiente=false; programarPublicacion(800); }

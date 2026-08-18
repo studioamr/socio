@@ -14,12 +14,7 @@
   "url": "",
   "nota": ""
  },
- "cuentas": [
-  {
-   "id": "A1",
-   "estado": "examen"
-  }
- ],
+ "cuentas": [],
  "gastos": [],
  "payouts": [],
  "notas": []
