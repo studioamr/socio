@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOCIEDAD APEX · Cuentas claras</title>
+<meta name="description" content="Tablero de socio: cuentas, gastos, pagos y avance en tiempo real.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0B0E14">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤝</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --fondo:#0B0E14; --panel:#121722; --linea:#232B3B;
+    --texto:#E8E4DA; --suave:#8B93A5; --oro:#C9A961;
+    --verde:#4CAF7A; --rojo:#C75B4A; --ambar:#D9A03F;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{background:var(--fondo);color:var(--texto);font-family:'Inter',system-ui,sans-serif;min-height:100vh;padding-bottom:60px}
+  .serif{font-family:'Fraunces',Georgia,serif}
+  main{max-width:900px;margin:0 auto;padding:0 18px}
+
+  header{padding:34px 18px 22px;border-bottom:1px solid var(--linea)}
+  .head-in{max-width:900px;margin:0 auto}
+  .kicker{font-size:11px;letter-spacing:.28em;color:var(--oro);font-weight:600}
+  h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(26px,5vw,38px);margin-top:8px}
+  .sub{color:var(--suave);font-size:13px;margin-top:6px}
+  .fase{display:inline-block;margin-top:14px;border:1px solid var(--linea);background:var(--panel);border-radius:999px;padding:7px 14px;font-size:12px;color:var(--texto)}
+  .fase b{color:var(--oro)}
+
+  .vivo{margin:18px 0 0;background:linear-gradient(120deg,#1a1206,#121722);border:1px solid #3a2f14;border-radius:14px;padding:16px 18px;display:none;align-items:center;gap:12px}
+  .vivo.on{display:flex}
+  .punto-vivo{width:10px;height:10px;border-radius:50%;background:var(--rojo);flex-shrink:0;animation:lat 1.2s infinite}
+  @keyframes lat{50%{opacity:.3}}
+  .vivo a{color:var(--oro);font-weight:600;text-decoration:none}
+  .vivo .n{font-size:12px;color:var(--suave)}
+
+  section{margin-top:30px}
+  h2{font-family:'Fraunces',serif;font-weight:600;font-size:19px;margin-bottom:12px}
+  h2 small{font-family:'Inter';font-size:11px;color:var(--suave);font-weight:400;margin-left:8px}
+
+  .nums{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  @media(min-width:700px){.nums{grid-template-columns:repeat(4,1fr)}}
+  .num{background:var(--panel);border:1px solid var(--linea);border-radius:14px;padding:16px 14px}
+  .num .v{font-family:'Fraunces',serif;font-weight:700;font-size:24px}
+  .num .l{font-size:11px;color:var(--suave);margin-top:4px;letter-spacing:.04em}
+  .num.oro .v{color:var(--oro)}
+  .num.verde .v{color:var(--verde)}
+
+  .barra-cap{background:var(--panel);border:1px solid var(--linea);border-radius:14px;padding:16px;margin-top:10px}
+  .barra-cap .titulo-b{display:flex;justify-content:space-between;font-size:12px;color:var(--suave);margin-bottom:8px}
+  .track{height:10px;background:#0E1320;border-radius:99px;overflow:hidden}
+  .fill{height:100%;background:linear-gradient(90deg,var(--oro),#E5C77E);border-radius:99px;transition:width .6s ease}
+  .barra-cap .pie{font-size:12px;color:var(--suave);margin-top:8px}
+  .barra-cap .pie b{color:var(--texto)}
+
+  .flota{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+  @media(min-width:700px){.flota{grid-template-columns:repeat(10,1fr)}}
+  .slot{aspect-ratio:1;border-radius:10px;border:1px dashed var(--linea);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10px;color:var(--suave)}
+  .slot b{font-size:11px;color:var(--texto)}
+  .slot.examen{border-style:solid;border-color:#3A4460;background:#141B2C}
+  .slot.pasada{border-style:solid;border-color:#54502B;background:#1B1A10;color:var(--ambar)}
+  .slot.activa{border-style:solid;border-color:#2C4A38;background:#10201735;color:var(--verde)}
+  .slot.activa b{color:var(--verde)}
+  .slot.caida{border-style:solid;border-color:#4A2C26;background:#201210;color:var(--rojo);opacity:.75}
+  .leyenda{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:11px;color:var(--suave)}
+  .leyenda span::before{content:'●';margin-right:5px}
+  .l-ex::before{color:#3A4460}.l-pa::before{color:var(--ambar)}.l-ac::before{color:var(--verde)}.l-ca::before{color:var(--rojo)}.l-va::before{color:var(--linea)}
+
+  table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--linea);border-radius:14px;overflow:hidden;font-size:13px}
+  .tabla-wrap{border-radius:14px;overflow-x:auto}
+  th{font-size:10px;letter-spacing:.12em;color:var(--suave);text-align:left;padding:12px 14px;border-bottom:1px solid var(--linea);font-weight:600}
+  td{padding:11px 14px;border-bottom:1px solid #1A2130}
+  tr:last-child td{border-bottom:none}
+  td.monto{font-family:'Fraunces',serif;font-weight:700}
+  td .chip{font-size:10px;font-weight:700;letter-spacing:.06em;padding:3px 8px;border-radius:6px}
+  .chip.ok{background:#12301F;color:var(--verde)}
+  .chip.esp{background:#33270E;color:var(--ambar)}
+  .vacio-t{color:var(--suave);font-size:13px;background:var(--panel);border:1px dashed var(--linea);border-radius:14px;padding:22px;text-align:center}
+
+  .nota{background:var(--panel);border:1px solid var(--linea);border-radius:14px;padding:14px 16px;margin-bottom:10px}
+  .nota .f{font-size:11px;color:var(--oro);letter-spacing:.08em;font-weight:600}
+  .nota p{font-size:13px;line-height:1.6;margin-top:6px;color:var(--texto)}
+
+  .trato{display:grid;gap:10px}
+  @media(min-width:700px){.trato{grid-template-columns:1fr 1fr}}
+  .regla{background:var(--panel);border:1px solid var(--linea);border-left:3px solid var(--oro);border-radius:12px;padding:13px 15px;font-size:13px;line-height:1.55;color:var(--texto)}
+
+  .track-rec{margin-top:14px;font-size:12px;color:var(--suave);border-top:1px solid var(--linea);padding-top:12px;line-height:1.6}
+  footer{text-align:center;color:var(--suave);font-size:11px;margin-top:44px;padding:0 18px;line-height:1.7}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-in">
+    <div class="kicker">SOCIEDAD APEX · ANDRÉ × COCO</div>
+    <h1>Cuentas claras</h1>
+    <div class="sub" id="subActualizado">Cargando…</div>
+    <div class="fase">Fase: <b id="fase">—</b></div>
+    <div class="vivo" id="vivo">
+      <div class="punto-vivo"></div>
+      <div><a id="vivoLink" href="#" target="_blank" rel="noopener">André está operando EN VIVO — entra a ver</a><div class="n" id="vivoNota"></div></div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section>
+    <h2>El dinero <small>USD · aprox. MXN al tipo de cambio del día</small></h2>
+    <div class="nums">
+      <div class="num"><div class="v" id="nInvertido">$0</div><div class="l">INVERTIDO (COCO)</div></div>
+      <div class="num oro"><div class="v" id="nCobrado">$0</div><div class="l">COBRADO DE APEX</div></div>
+      <div class="num verde"><div class="v" id="nCoco">$0</div><div class="l">PARA COCO</div></div>
+      <div class="num"><div class="v" id="nAndre">$0</div><div class="l">PARA ANDRÉ</div></div>
+    </div>
+    <div class="barra-cap">
+      <div class="titulo-b"><span>RECUPERACIÓN DEL CAPITAL DE COCO</span><span id="pctRec">0%</span></div>
+      <div class="track"><div class="fill" id="fillRec" style="width:0%"></div></div>
+      <div class="pie" id="pieRec">Coco recupera el 100% de su inversión antes de repartir un peso.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>La flota <small id="flotaResumen"></small></h2>
+    <div class="flota" id="flota"></div>
+    <div class="leyenda">
+      <span class="l-va">Por comprar</span><span class="l-ex">En examen</span>
+      <span class="l-pa">Pasada (por activar)</span><span class="l-ac">ACTIVA (PA)</span><span class="l-ca">Caída</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Pagos de Apex <small>cada pago con su comprobante</small></h2>
+    <div id="payoutsBox"></div>
+  </section>
+
+  <section>
+    <h2>Gastos <small>hasta el último dólar</small></h2>
+    <div id="gastosBox"></div>
+  </section>
+
+  <section>
+    <h2>Bitácora</h2>
+    <div id="notasBox"></div>
+  </section>
+
+  <section>
+    <h2>El trato</h2>
+    <div class="trato" id="tratoBox"></div>
+    <div class="track-rec" id="trackRec"></div>
+  </section>
+</main>
+
+<footer>
+  Tablero de solo lectura · Lo actualiza André y cada cambio queda fechado.<br>
+  Las cuentas se operan a nombre de André por reglas de Apex — el capital y el reparto son de la sociedad.
+</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const usd=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0});
+const mxn=new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:0});
+
+async function cargar(){
+  let D;
+  try{ D=await (await fetch('datos.json?v='+Date.now())).json(); }
+  catch(e){ $('subActualizado').textContent='No se pudieron cargar los datos.'; return; }
+
+  $('fase').textContent=D.fase||'—';
+  $('subActualizado').textContent=D.actualizado
+    ? 'Actualizado el '+new Date(D.actualizado).toLocaleString('es-MX',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'})
+    : 'Aún sin movimientos — el tablero se estrena con la primera compra.';
+
+  if(D.enVivo&&D.enVivo.activo&&D.enVivo.url){
+    $('vivo').classList.add('on');
+    $('vivoLink').href=D.enVivo.url;
+    $('vivoNota').textContent=D.enVivo.nota||'';
+  }
+
+  const invertido=(D.gastos||[]).reduce((a,g)=>a+(+g.monto||0),0);
+  const cobrado=(D.payouts||[]).reduce((a,p)=>a+(+p.monto||0),0);
+  const recuperado=Math.min(cobrado,invertido);
+  const ganancia=Math.max(0,cobrado-invertido);
+  const tc=D.tipoCambio||18.5;
+  $('nInvertido').textContent=usd.format(invertido);
+  $('nCobrado').textContent=usd.format(cobrado);
+  $('nCoco').textContent=usd.format(recuperado+ganancia/2);
+  $('nAndre').textContent=usd.format(ganancia/2);
+  const pct=invertido?Math.min(100,Math.round(recuperado/invertido*100)):0;
+  $('pctRec').textContent=pct+'%';
+  $('fillRec').style.width=pct+'%';
+  $('pieRec').innerHTML = invertido
+    ? (pct>=100
+        ? '<b>Capital 100% recuperado.</b> Desde aquí todo se parte 50/50. Ganancia repartida: <b>'+usd.format(ganancia)+'</b> ('+mxn.format(ganancia*tc)+' aprox.)'
+        : 'Van <b>'+usd.format(recuperado)+'</b> de <b>'+usd.format(invertido)+'</b> · faltan '+usd.format(invertido-recuperado)+' para que Coco recupere todo ('+mxn.format((invertido-recuperado)*tc)+' aprox.)')
+    : 'Coco recupera el 100% de su inversión antes de repartir un peso.';
+
+  // flota: 20 slots
+  const flota=$('flota'); flota.innerHTML='';
+  const cuentas=D.cuentas||[];
+  let c={examen:0,pasada:0,activa:0,caida:0};
+  for(let i=0;i<20;i++){
+    const cta=cuentas[i];
+    const el=document.createElement('div');
+    if(cta){
+      el.className='slot '+cta.estado;
+      el.innerHTML='<b>'+(cta.id||('A'+(i+1)))+'</b>'+({examen:'examen',pasada:'pasada',activa:'ACTIVA',caida:'caída'}[cta.estado]||'');
+      c[cta.estado]=(c[cta.estado]||0)+1;
+    }else{
+      el.className='slot';
+      el.innerHTML='<b>·</b>';
+    }
+    flota.appendChild(el);
+  }
+  $('flotaResumen').textContent=cuentas.length
+    ? `${c.activa||0} activas · ${c.pasada||0} pasadas · ${c.examen||0} en examen · ${c.caida||0} caídas`
+    : 'las 20 posiciones, esperando arranque';
+
+  // payouts
+  const pb=$('payoutsBox');
+  if((D.payouts||[]).length){
+    pb.innerHTML='<div class="tabla-wrap"><table><tr><th>FECHA</th><th>CUENTA</th><th>MONTO</th><th>ESTADO</th></tr>'+
+      D.payouts.map(p=>`<tr><td>${esc(p.fecha||'')}</td><td>${esc(p.cuenta||'—')}</td><td class="monto">${usd.format(+p.monto||0)}</td><td><span class="chip ${p.estado==='pagado'?'ok':'esp'}">${p.estado==='pagado'?'PAGADO ✓':'EN PROCESO'}</span></td></tr>`).join('')+'</table></div>';
+  }else pb.innerHTML='<div class="vacio-t">Aquí va a aparecer cada pago de Apex, con fecha y monto. El primero es el que importa.</div>';
+
+  // gastos
+  const gb=$('gastosBox');
+  if((D.gastos||[]).length){
+    gb.innerHTML='<div class="tabla-wrap"><table><tr><th>FECHA</th><th>CONCEPTO</th><th>MONTO</th></tr>'+
+      D.gastos.map(g=>`<tr><td>${esc(g.fecha||'')}</td><td>${esc(g.concepto||'')}</td><td class="monto">${usd.format(+g.monto||0)}</td></tr>`).join('')+
+      `<tr><td></td><td><b>TOTAL</b></td><td class="monto">${usd.format(invertido)}</td></tr></table></div>`;
+  }else gb.innerHTML='<div class="vacio-t">Todavía no hay gastos. La primera compra son los packs de exámenes el día del cupón.</div>';
+
+  // notas
+  const nb=$('notasBox');
+  if((D.notas||[]).length){
+    nb.innerHTML=[...D.notas].reverse().map(n=>`<div class="nota"><div class="f">${esc(n.fecha||'')}</div><p>${esc(n.texto||'')}</p></div>`).join('');
+  }else nb.innerHTML='<div class="vacio-t">Reporte semanal de André: qué se hizo, qué viene.</div>';
+
+  // trato
+  const t=D.trato||{};
+  $('tratoBox').innerHTML=[t.estructura,t.recuperacion,t.reparto,t.tope].filter(Boolean).map(x=>`<div class="regla">${esc(x)}</div>`).join('');
+  $('trackRec').textContent=D.trackRecord||'';
+}
+function esc(s){ return String(s??'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])); }
+cargar();
+</script>
+</body>
+</html>
