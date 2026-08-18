@@ -142,7 +142,7 @@
     <div id="gastosBox"></div>
   </section>
 
-  <section>
+  <section id="secNotas" hidden>
     <h2>Bitácora</h2>
     <div id="notasBox"></div>
   </section>
@@ -169,7 +169,13 @@ async function cargar(){
   try{ D=await (await fetch('datos.json?v='+Date.now())).json(); }
   catch(e){ $('subActualizado').textContent='No se pudieron cargar los datos.'; return; }
 
-  $('fase').textContent=D.fase||'—';
+  const cts=(D.cuentas||[]).filter(Boolean);
+  const n=e=>cts.filter(c=>c.estado===e).length;
+  $('fase').textContent = !cts.length ? 'Esperando arranque'
+    : n('activa') ? n('activa')+' PA'+(n('activa')===1?'':'s')+' activa'+(n('activa')===1?'':'s')+' — generando'
+    : n('pasada') ? 'Activando cuentas pasadas'
+    : n('examen') ? 'Ronda de exámenes corriendo'
+    : 'Reponiendo flota';
   $('subActualizado').textContent=D.actualizado
     ? 'Actualizado el '+new Date(D.actualizado).toLocaleString('es-MX',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'})
     : 'Aún sin movimientos — el tablero se estrena con la primera compra.';
@@ -235,10 +241,10 @@ async function cargar(){
   }else gb.innerHTML='<div class="vacio-t">Todavía no hay gastos. La primera compra son los packs de exámenes el día del cupón.</div>';
 
   // notas
-  const nb=$('notasBox');
   if((D.notas||[]).length){
-    nb.innerHTML=[...D.notas].reverse().map(n=>`<div class="nota"><div class="f">${esc(n.fecha||'')}</div><p>${esc(n.texto||'')}</p></div>`).join('');
-  }else nb.innerHTML='<div class="vacio-t">Reporte semanal de André: qué se hizo, qué viene.</div>';
+    $('secNotas').hidden=false;
+    $('notasBox').innerHTML=[...D.notas].reverse().map(x=>`<div class="nota"><div class="f">${esc(x.fecha||'')}</div><p>${esc(x.texto||'')}</p></div>`).join('');
+  }
 
   // trato
   const t=D.trato||{};
