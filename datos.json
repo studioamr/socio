@@ -1,17 +1,26 @@
 {
-  "actualizado": null,
-  "fase": "Propuesta — esperando arranque de la sociedad",
-  "tipoCambio": 18.5,
-  "trato": {
-    "estructura": "Coco pone el capital · André pone el trabajo y opera. Cuentas a nombre de André (regla de Apex).",
-    "recuperacion": "De los primeros pagos, Coco recupera el 100% de su inversión.",
-    "reparto": "Recuperado el capital, todo se divide 50/50.",
-    "tope": "Máximo 3 rondas de exámenes ($1,140 USD) sin sentarnos a revisar."
-  },
-  "trackRecord": "André ya cobró 3 payouts de Apex con este mismo método, en cuentas propias, antes de esta sociedad.",
-  "enVivo": { "activo": false, "url": "", "nota": "" },
-  "cuentas": [],
-  "gastos": [],
-  "payouts": [],
-  "notas": []
+ "actualizado": "2026-08-18T16:32:58.512Z",
+ "fase": "Propuesta — esperando arranque de la sociedad",
+ "tipoCambio": 18.5,
+ "trato": {
+  "estructura": "Coco pone el capital · André pone el trabajo y opera. Cuentas a nombre de André (regla de Apex).",
+  "recuperacion": "De los primeros pagos, Coco recupera el 100% de su inversión.",
+  "reparto": "Recuperado el capital, todo se divide 50/50.",
+  "tope": "Máximo 3 rondas de exámenes ($1,140 USD) sin sentarnos a revisar."
+ },
+ "trackRecord": "André ya cobró 3 payouts de Apex con este mismo método, en cuentas propias, antes de esta sociedad.",
+ "enVivo": {
+  "activo": false,
+  "url": "",
+  "nota": ""
+ },
+ "cuentas": [
+  {
+   "id": "A1",
+   "estado": "examen"
+  }
+ ],
+ "gastos": [],
+ "payouts": [],
+ "notas": []
 }
