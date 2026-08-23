@@ -324,8 +324,34 @@ function programarPublicacion(ms){
 }
 async function gh(path,opts={}){
   const r=await fetch('https://api.github.com'+path,{...opts,headers:{'Authorization':'Bearer '+token(),'Accept':'application/vnd.github+json',...(opts.headers||{})}});
-  if(!r.ok) throw new Error('HTTP '+r.status);
+  if(!r.ok){
+    /* El status se guarda APARTE del texto. Antes todo iba dentro del mensaje y
+       el catch lo adivinaba con una expresión regular — que fallaba en cuanto
+       GitHub contestaba algo distinto de 401 o 403. */
+    let detalle=''; try{ detalle=(await r.json()).message||''; }catch(e){}
+    const err=new Error('HTTP '+r.status+(detalle?' · '+detalle:''));
+    err.status=r.status; err.detalle=detalle;
+    throw err;
+  }
   return r.json();
+}
+
+/* Qué pasó, en español y con la causa REAL.
+   El mensaje viejo decía «SIN CONEXIÓN» para todo lo que no fuera 401/403 — así
+   que un 404 (el caso más común: el token no tiene permiso de escritura en este
+   repo, y GitHub contesta 404 en vez de 403 para no delatar que existe) mandaba
+   a revisar el wifi. Buscar el problema en el lugar equivocado cuesta más que
+   el problema. */
+function porQueFallo(e){
+  if(!e || !e.status) return ['SIN CONEXIÓN — REINTENTO EN 30 S', true];
+  switch(e.status){
+    case 401: return ['CÓDIGO INVÁLIDO O VENCIDO — VUELVE A ABRIR TU LINK MÁGICO', false];
+    case 403: return ['EL CÓDIGO NO TIENE PERMISO PARA ESCRIBIR AQUÍ', false];
+    case 404: return ['EL CÓDIGO NO PUEDE ESCRIBIR EN ESTE REPO (permiso «Contents: Read and write»)', false];
+    case 409: return ['ALGUIEN MÁS GUARDÓ ANTES — REINTENTO EN 30 S', true];
+    case 422: return ['GITHUB RECHAZÓ EL CONTENIDO' + (e.detalle ? ' · ' + e.detalle : ''), false];
+    default:  return ['ERROR ' + e.status + (e.detalle ? ' · ' + e.detalle : '') + ' — REINTENTO EN 30 S', true];
+  }
 }
 async function publicar(){
   if(!EDICION) return;
@@ -340,12 +366,13 @@ async function publicar(){
     localStorage.removeItem('socio_borrador');
     sync('ok','✓ GUARDADO — COCO YA LO VE');
   }catch(e){
-    if(/401|403/.test(e.message||'')){
-      sync('error','CÓDIGO INVÁLIDO — VUELVE A ABRIR TU LINK MÁGICO');
-    }else{
-      sync('error','SIN CONEXIÓN — REINTENTO EN 30 S');
-      programarPublicacion(30000);
-    }
+    const [txt, reintentar] = porQueFallo(e);
+    sync('error', txt);
+    console.error('[socio] publicar falló:', e.status || 'sin status', e.message);
+    /* Reintentar un problema de permisos es tirar la batería: eso no se arregla
+       solo. Sólo se reintenta lo que de verdad puede cambiar por sí mismo — la
+       red y los conflictos de escritura. */
+    if(reintentar) programarPublicacion(30000);
   }finally{
     publicando=false;
     if(pubPendiente){ pubPendiente=false; programarPublicacion(800); }
