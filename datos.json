@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-08-23T17:52:05.465Z",
+ "actualizado": "2026-08-23T17:53:25.137Z",
  "fase": "Propuesta — esperando arranque de la sociedad",
  "tipoCambio": 18.5,
  "trato": {
@@ -14,7 +14,20 @@
   "url": "",
   "nota": ""
  },
- "cuentas": [],
+ "cuentas": [
+  {
+   "id": "A1",
+   "estado": "examen"
+  },
+  {
+   "id": "A2",
+   "estado": "examen"
+  },
+  {
+   "id": "A3",
+   "estado": "examen"
+  }
+ ],
  "gastos": [
   {
    "fecha": "19 agosto",
