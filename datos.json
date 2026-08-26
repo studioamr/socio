@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-08-26T04:26:03.129Z",
+ "actualizado": "2026-08-26T04:27:26.520Z",
  "fase": "Propuesta — esperando arranque de la sociedad",
  "tipoCambio": 18.5,
  "trato": {
@@ -85,6 +85,11 @@
    "fecha": "19 agosto",
    "concepto": "3 examenes",
    "monto": -88
+  },
+  {
+   "fecha": "25 agos",
+   "concepto": "15 examenes",
+   "monto": 280
   }
  ],
  "payouts": [],
