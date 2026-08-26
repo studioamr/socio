@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-08-23T17:53:25.137Z",
+ "actualizado": "2026-08-26T04:26:03.129Z",
  "fase": "Propuesta — esperando arranque de la sociedad",
  "tipoCambio": 18.5,
  "trato": {
@@ -17,7 +17,7 @@
  "cuentas": [
   {
    "id": "A1",
-   "estado": "examen"
+   "estado": "pasada"
   },
   {
    "id": "A2",
@@ -25,6 +25,58 @@
   },
   {
    "id": "A3",
+   "estado": "examen"
+  },
+  {
+   "id": "A4",
+   "estado": "examen"
+  },
+  {
+   "id": "A5",
+   "estado": "examen"
+  },
+  {
+   "id": "A6",
+   "estado": "examen"
+  },
+  {
+   "id": "A7",
+   "estado": "examen"
+  },
+  {
+   "id": "A8",
+   "estado": "examen"
+  },
+  {
+   "id": "A9",
+   "estado": "examen"
+  },
+  {
+   "id": "A10",
+   "estado": "examen"
+  },
+  {
+   "id": "A11",
+   "estado": "examen"
+  },
+  {
+   "id": "A12",
+   "estado": "examen"
+  },
+  {
+   "id": "A13",
+   "estado": "examen"
+  },
+  {
+   "id": "A14",
+   "estado": "examen"
+  },
+  {
+   "id": "A15",
+   "estado": "examen"
+  },
+  {
+   "id": "A16",
    "estado": "examen"
   }
  ],
