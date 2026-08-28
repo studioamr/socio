@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-08-28T18:37:52.395Z",
+ "actualizado": "2026-08-28T19:40:03.403Z",
  "fase": "Propuesta — esperando arranque de la sociedad",
  "tipoCambio": 18.5,
  "trato": {
@@ -73,6 +73,18 @@
   },
   {
    "id": "A15",
+   "estado": "examen"
+  },
+  {
+   "id": "A16",
+   "estado": "examen"
+  },
+  {
+   "id": "A17",
+   "estado": "examen"
+  },
+  {
+   "id": "A18",
    "estado": "examen"
   }
  ],
