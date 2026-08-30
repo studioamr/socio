@@ -202,13 +202,13 @@ async function leerRemoto(){
 async function init(){
   const remoto=await leerRemoto();
   D=remoto||{};
-  D.cuentas=D.cuentas||[]; D.gastos=D.gastos||[]; D.payouts=D.payouts||[];
-  D.gastos=D.gastos.map(g=>({...g,monto:abs(g.monto)}));
-  D.payouts=D.payouts.map(p=>({...p,monto:abs(p.monto)}));
   if(EDICION){
     const local=localStorage.getItem('socio_borrador');
     if(local){ try{ D=JSON.parse(local); programarPublicacion(400); }catch(e){} }
   }
+  /* Después de cargar el borrador, no antes: si el borrador del teléfono trae
+     los montos viejos en negativo, sanear sólo lo remoto los volvería a subir. */
+  sanear();
   render(); estadoListo();
   if(m&&EDICION) sync('ok','✓ MODO ANDRÉ ACTIVADO EN ESTE TELÉFONO');
   // refresco automático (solo lectura o sin cambios locales)
@@ -227,11 +227,19 @@ function fechaCorta(iso){
   return new Date(iso).toLocaleString('es-MX',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}).toUpperCase();
 }
 
+/* Un gasto es una magnitud. Los montos viejos (-288, -88) entran aquí una vez
+   y quedan corregidos en la nube al siguiente guardado. */
+function sanear(){
+  D.cuentas=D.cuentas||[]; D.gastos=D.gastos||[]; D.payouts=D.payouts||[];
+  D.gastos=D.gastos.map(g=>({...g,monto:abs(g.monto)}));
+  D.payouts=D.payouts.map(p=>({...p,monto:abs(p.monto)}));
+}
+
 async function refrescar(){
   if(EDICION&&(localStorage.getItem('socio_borrador')||publicando)) return;
   const remoto=await leerRemoto();
   if(remoto&&remoto.actualizado!==D.actualizado){
-    D=remoto; D.cuentas=D.cuentas||[]; D.gastos=D.gastos||[]; D.payouts=D.payouts||[];
+    D=remoto; sanear();
     render(); estadoListo();
   }
 }
