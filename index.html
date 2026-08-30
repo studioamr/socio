@@ -173,6 +173,13 @@ const GH={owner:'studioamr',repo:'socio',branch:'main',file:'datos.json'};
 const RAW=`https://raw.githubusercontent.com/${GH.owner}/${GH.repo}/${GH.branch}/${GH.file}`;
 const $=id=>document.getElementById(id);
 const usd=n=>'$'+Math.round(+n||0).toLocaleString('en-US');
+/* Los gastos se capturaron con signo negativo (-288, -88). El dinero se
+   calculaba con ese signo crudo, así que «invertido» daba -376: el capital
+   parecía 100% recuperado y a André le tocaban $188 sin haber cobrado un peso.
+   Un gasto es una magnitud, no una dirección: aquí siempre entra en positivo. */
+const abs=n=>Math.abs(+n||0);
+const totalInvertido=()=>D.gastos.reduce((a,g)=>a+abs(g.monto),0);
+const totalCobrado=()=>D.payouts.reduce((a,p)=>a+abs(p.monto),0);
 let D=null, pubTimer=null, publicando=false, pubPendiente=false;
 const ESTADOS=[null,'examen','pasada','activa','caida'];
 
@@ -196,6 +203,8 @@ async function init(){
   const remoto=await leerRemoto();
   D=remoto||{};
   D.cuentas=D.cuentas||[]; D.gastos=D.gastos||[]; D.payouts=D.payouts||[];
+  D.gastos=D.gastos.map(g=>({...g,monto:abs(g.monto)}));
+  D.payouts=D.payouts.map(p=>({...p,monto:abs(p.monto)}));
   if(EDICION){
     const local=localStorage.getItem('socio_borrador');
     if(local){ try{ D=JSON.parse(local); programarPublicacion(400); }catch(e){} }
@@ -231,8 +240,8 @@ async function refrescar(){
 function render(){ dinero(); plan(); pintarFlota(); pintarListas(); }
 
 function dinero(){
-  const inv=D.gastos.reduce((a,g)=>a+(+g.monto||0),0);
-  const cob=D.payouts.reduce((a,p)=>a+(+p.monto||0),0);
+  const inv=totalInvertido();
+  const cob=totalCobrado();
   const rec=Math.min(cob,inv), gan=Math.max(0,cob-inv);
   const tc=D.tipoCambio||18.5;
   $('nInvertido').textContent=usd(inv);
@@ -244,7 +253,7 @@ function dinero(){
     ? 'Coco recupera el 100% de su inversión antes de repartir. Después, 50/50.'
     : pct>=100
       ? 'CAPITAL 100% RECUPERADO — todo se parte 50/50. Ganancia repartida: <b>'+usd(gan)+'</b> (≈'+Math.round(gan*tc).toLocaleString('es-MX')+' MXN)'
-      : 'Recuperación del capital: <b>'+pct+'%</b> — faltan <b>'+usd(inv-rec)+'</b> (≈'+Math.round((inv-rec)*tc).toLocaleString('es-MX')+' MXN) para que Coco recupere todo.';
+      : 'Coco lleva recuperado <b>'+usd(rec)+'</b> de <b>'+usd(inv)+'</b> ('+pct+'%) — faltan <b>'+usd(inv-rec)+'</b> (≈'+Math.round((inv-rec)*tc).toLocaleString('es-MX')+' MXN).<br>Hasta que ese número llegue a cero, André no reparte nada: su parte es <b>$0</b>.';
 }
 
 function plan(){
@@ -252,8 +261,8 @@ function plan(){
   const compradas=cts.length;
   const pasadas=cts.filter(c=>c.estado==='pasada'||c.estado==='activa').length;
   const activas=cts.filter(c=>c.estado==='activa').length;
-  const inv=D.gastos.reduce((a,g)=>a+(+g.monto||0),0);
-  const cob=D.payouts.reduce((a,p)=>a+(+p.monto||0),0);
+  const inv=totalInvertido();
+  const cob=totalCobrado();
   seg('seg1','paso1',compradas/20); $('v1').textContent=compradas+'/20';
   seg('seg2','paso2',compradas?pasadas/compradas:0); $('v2').textContent=pasadas;
   seg('seg3','paso3',pasadas?activas/pasadas:0); $('v3').textContent=activas;
@@ -289,7 +298,7 @@ function pintarFlota(){
 
 function pintarListas(){
   $('gastosLista').innerHTML=D.gastos.length
-    ? D.gastos.map((g,i)=>`<div class="fila"><span>${esc(g.fecha||'')} · ${esc(g.concepto||'')}</span><span><b>${usd(g.monto)}</b> <button onclick="quitar('gastos',${i})">×</button></span></div>`).join('')
+    ? D.gastos.map((g,i)=>`<div class="fila"><span>${esc(g.fecha||'')} · ${esc(g.concepto||'')}</span><span><b>−${usd(abs(g.monto))}</b> <button onclick="quitar('gastos',${i})">×</button></span></div>`).join('')
     : '<div class="lista-vacia">Sin gastos todavía</div>';
   $('payoutsLista').innerHTML=D.payouts.length
     ? D.payouts.map((p,i)=>`<div class="fila"><span>${esc(p.fecha||'')} · ${esc(p.cuenta||'')}</span><span class="${p.estado==='pagado'?'up':'warn'}">${p.estado==='pagado'?'✓':'PROC'}</span><span><b>${usd(p.monto)}</b> <button onclick="quitar('payouts',${i})">×</button></span></div>`).join('')
@@ -299,13 +308,13 @@ window.quitar=(k,i)=>{ if(!EDICION) return; D[k].splice(i,1); cambio(); render()
 
 if(EDICION){
   $('btnGasto').onclick=()=>{
-    const monto=parseFloat($('gMonto').value); if(!monto) return alert('Falta el monto');
+    const monto=Math.abs(parseFloat($('gMonto').value)); if(!monto) return alert('Falta el monto');
     D.gastos.push({fecha:$('gFecha').value.trim(),concepto:$('gConcepto').value.trim(),monto});
     $('gMonto').value=$('gConcepto').value='';
     cambio(); render();
   };
   $('btnPayout').onclick=()=>{
-    const monto=parseFloat($('pMonto').value); if(!monto) return alert('Falta el monto');
+    const monto=Math.abs(parseFloat($('pMonto').value)); if(!monto) return alert('Falta el monto');
     D.payouts.push({fecha:$('pFecha').value.trim(),cuenta:$('pCuenta').value.trim().toUpperCase(),estado:$('pEstado').value==='pagado'?'pagado':'proceso',monto});
     $('pMonto').value=$('pCuenta').value='';
     cambio(); render();
