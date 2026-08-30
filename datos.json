@@ -92,12 +92,12 @@
   {
    "fecha": "22 agos",
    "concepto": "15 exams",
-   "monto": -288
+   "monto": 288
   },
   {
    "fecha": "9agos",
    "concepto": "",
-   "monto": -88
+   "monto": 88
   }
  ],
  "payouts": [],
